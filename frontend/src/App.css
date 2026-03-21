@@ -1,0 +1,66 @@
+:root {
+  --bg-color: #121212;
+  --text-color: #ffffff;
+  --primary-color: #1DB954; /* Un verde al estilo app musical */
+  --card-bg: #1e1e1e;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.app-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 3.5rem;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(45deg, var(--primary-color), #81b71a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  color: #b3b3b3;
+  font-size: 1.2rem;
+  margin-bottom: 50px;
+}
+
+.status-card {
+  background-color: var(--card-bg);
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.status-card:hover {
+  transform: translateY(-5px);
+}
+
+.status-card h2 {
+  margin-top: 0;
+  color: #e0e0e0;
+}
+
+.success {
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin-top: 20px;
+}
+
+.error {
+  color: #ff4a4a;
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin-top: 20px;
+}
