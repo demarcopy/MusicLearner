@@ -1,7 +1,7 @@
 :root {
   --bg-color: #121212;
   --text-color: #ffffff;
-  --primary-color: #1DB954; /* Un verde al estilo app musical */
+  --primary-color: #1DB954;
   --card-bg: #1e1e1e;
 }
 
@@ -13,54 +13,309 @@ body {
 }
 
 .app-container {
-  max-width: 800px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 60px 20px;
-  text-align: center;
+  padding: 40px 20px;
 }
 
 h1 {
+  text-align: center;
   font-size: 3.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0px;
   background: linear-gradient(45deg, var(--primary-color), #81b71a);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .subtitle {
+  text-align: center;
   color: #b3b3b3;
   font-size: 1.2rem;
-  margin-bottom: 50px;
+  margin-bottom: 40px;
 }
 
-.status-card {
+.helper-text {
+  color: #b3b3b3;
+  font-size: 0.95rem;
+  margin-bottom: 15px;
+  margin-top: 0;
+}
+
+.form-card {
   background-color: var(--card-bg);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  margin-bottom: 40px;
+  border: 1px solid rgba(255,255,255,0.05);
+  max-width: 800px;
+  margin: 0 auto 40px auto;
+}
+
+.form-card h2 { margin-top: 0; color: #e0e0e0;}
+
+/* Buscador Formulario */
+.search-form {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+}
+
+.search-form input {
+  flex-grow: 1;
+}
+
+input, textarea {
+  background-color: #2b2b2b;
+  border: 1px solid #333;
+  color: white;
+  padding: 15px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 1.1rem;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.3);
+}
+
+button {
+  background-color: var(--primary-color);
+  color: #000;
+  border: none;
+  padding: 15px 25px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+  white-space: nowrap;
+}
+
+button:hover:not(:disabled) {
+  transform: scale(1.03);
+  background-color: #1ed760;
+}
+
+button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+/* Resultados Songsterr */
+.results-list {
+  margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: #121212;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #333;
+}
+
+.result-item:last-child {
+  border-bottom: none;
+}
+
+.result-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.result-info strong {
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.result-info span {
+  color: #a0a0a0;
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+
+.add-btn {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+}
+
+/* Biblioteca Grilla */
+.songs-container h2 { text-align: center; margin-bottom: 30px; color: #e0e0e0;}
+
+.songs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 25px;
+}
+
+/* Tarjeta de Canción */
+.song-card {
+  background-color: var(--card-bg);
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255,255,255,0.05);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  min-height: 250px; 
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.song-card h3 {
+  margin: 0 0 5px 0;
+  color: var(--primary-color);
+  font-size: 1.4rem;
+}
+
+.artist {
+  margin: 0;
+  color: #a0a0a0;
+  font-size: 1rem;
+}
+
+/* Donde se renderiza la tablatura */
+.song-content {
+  flex-grow: 1;
+  background-color: #000;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.songsterr-link-container {
+  text-align: center;
+  color: #a0a0a0;
+}
+
+.play-btn {
+  margin-top: 15px;
+  display: inline-block;
+  background-color: var(--primary-color);
+  color: #000;
+  padding: 12px 25px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.play-btn:hover {
+  transform: scale(1.05);
+  background-color: #1ed760;
+  color: #000;
+}
+
+.song-content pre {
+  margin: 0;
+  padding: 15px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
+  color: #e0e0e0;
+  white-space: pre-wrap;
+}
+
+.delete-btn {
+  background-color: #2b2b2b;
+  color: #ff4a4a;
+  padding: 8px 12px;
+  font-size: 1rem;
+  border-radius: 8px;
+}
+
+.delete-btn:hover {
+  background-color: #ff4a4a;
+  color: white;
+  transform: scale(1);
+}
+
+/* Navbar Styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background-color: var(--card-bg);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.nav-brand {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary-color);
+}
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+.nav-links a {
+  color: #a0a0a0;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 15px;
+  border-radius: 20px;
+  transition: all 0.2s;
+}
+.nav-links a:hover { color: #fff; }
+.nav-links a.active {
+  background-color: rgba(29, 185, 84, 0.1);
+  color: var(--primary-color);
+}
+
+.pages-container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+
+/* Theory Styles */
+.theory-container { width: 100%; }
+.theory-header { text-align: center; }
+.theory-layout { display: flex; gap: 30px; margin-top: 30px; }
+.syllabus-sidebar {
+  width: 300px;
+  background-color: var(--card-bg);
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+  height: fit-content;
+}
+.syllabus-section h3 { color: var(--primary-color); border-bottom: 1px solid #333; padding-bottom: 10px;}
+.syllabus-section ul { list-style: none; padding: 0; margin: 0; }
+.syllabus-section li {
+  padding: 12px;
+  color: #e0e0e0;
+  cursor: pointer;
+  border-radius: 6px;
+  margin-bottom: 5px;
+  transition: background 0.2s;
+}
+.syllabus-section li:hover { background-color: rgba(255,255,255,0.05); }
+.syllabus-section li.active-lesson {
+  background-color: var(--primary-color);
+  color: #000;
+  font-weight: 600;
+}
+.lesson-viewer {
+  flex-grow: 1;
+  background-color: var(--card-bg);
+  border-radius: 12px;
   padding: 40px;
-  border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-  transition: transform 0.3s ease;
+  min-height: 500px;
   border: 1px solid rgba(255,255,255,0.05);
 }
-
-.status-card:hover {
-  transform: translateY(-5px);
-}
-
-.status-card h2 {
-  margin-top: 0;
-  color: #e0e0e0;
-}
-
-.success {
-  color: var(--primary-color);
-  font-weight: 600;
-  font-size: 1.2rem;
-  margin-top: 20px;
-}
-
-.error {
-  color: #ff4a4a;
-  font-weight: 600;
-  font-size: 1.2rem;
-  margin-top: 20px;
-}
+.lesson-content h2 { color: #fff; margin-top:0; font-size: 2.5rem;}
+.lesson-body { color: #ccc; font-size: 1.1rem; line-height: 1.6; margin-top: 20px;}
+.empty-lesson { display:flex; height:100%; align-items:center; justify-content:center; color:#666;}
