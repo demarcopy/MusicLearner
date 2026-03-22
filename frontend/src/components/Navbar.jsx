@@ -19,6 +19,18 @@ export default function Navbar() {
         >
           📖 Teoría Musical
         </Link>
+        <Link 
+          to="/practica" 
+          className={location.pathname === '/practica' ? 'active' : ''}
+        >
+          🎸 Gimnasio (Práctica)
+        </Link>
+        <Link 
+          to="/rutinas" 
+          className={location.pathname === '/rutinas' ? 'active' : ''}
+        >
+          🏋️‍♀️ Rutinas (Cronómetro)
+        </Link>
       </div>
     </nav>
   )

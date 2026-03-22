@@ -319,3 +319,103 @@ button:disabled {
 .lesson-content h2 { color: #fff; margin-top:0; font-size: 2.5rem;}
 .lesson-body { color: #ccc; font-size: 1.1rem; line-height: 1.6; margin-top: 20px;}
 .empty-lesson { display:flex; height:100%; align-items:center; justify-content:center; color:#666;}
+
+/* Practice Module (Gimnasio) Styles */
+.practice-container { width: 100%; max-width: 1200px; margin: 0 auto; text-align: center; }
+.practice-dashboard { margin-top: 30px; display: flex; gap: 40px; text-align: left; align-items: flex-start;}
+
+.practice-settings-panel { flex: 1; display:flex; flex-direction:column; gap:20px; }
+.advanced-settings { background-color: var(--card-bg); padding: 30px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
+.advanced-settings h3 { color: white; margin-top:0; border-bottom: 1px solid #333; padding-bottom: 15px;}
+.checkboxes-toggles { display: flex; flex-direction: column; gap: 15px; margin-top: 15px;}
+.checkboxes-toggles label { color: #ccc; font-size: 1rem; display: flex; align-items: center; gap: 10px; cursor:pointer;}
+.chords-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px; margin-top: 15px;}
+.chord-checkbox { 
+  background-color: #222; color: #666; padding: 10px; border-radius: 6px; 
+  text-align: center; cursor: pointer; font-weight: bold; border: 1px solid #333;
+  transition: all 0.2s;
+  user-select: none;
+}
+.chord-checkbox.active { background-color: var(--primary-color); color: #000; border-color: var(--primary-color); }
+.chord-checkbox:hover { transform: scale(1.05); }
+
+.practice-controls { 
+  background-color: var(--card-bg); 
+  padding: 30px; 
+  border-radius: 12px; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 60px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.control-group { display: flex; flex-direction: column; align-items: center; gap: 10px; color: #a0a0a0; font-weight:bold; }
+.speed-selector { display: flex; align-items: center; gap: 15px; }
+.speed-selector button { 
+  width: 50px; height: 50px; border-radius: 50%; font-size: 1.5rem; 
+  background-color: #333; color: white; border: none; cursor: pointer;
+  transition: all 0.2s;
+}
+.speed-selector button:hover:not(:disabled) { transform:scale(1.1); background-color: var(--primary-color); color: black; }
+.speed-selector button:disabled { opacity: 0.3; cursor: not-allowed; }
+.speed-display { font-size: 1.4rem; font-weight: bold; color: white; width: 90px; }
+.master-play { padding: 20px 40px; font-size: 1.4rem; border-radius: 40px; box-shadow: 0 4px 15px rgba(29, 185, 84, 0.4);}
+.master-play.stop { background-color: #ff4a4a; box-shadow: 0 4px 15px rgba(255, 74, 74, 0.4);}
+.master-play.stop:hover { background-color: #ff2a2a; transform: scale(1.05);}
+
+.chord-screen { 
+  flex: 1;
+  text-align: center;
+  background-color: #0a0a0a; 
+  border: 4px solid #222; 
+  border-radius: 20px; 
+  padding: 60px 20px; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 50px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  position: sticky;
+  top: 20px;
+}
+.chord-screen.active-screen { border-color: var(--primary-color); box-shadow: 0 0 50px rgba(29, 185, 84, 0.15); }
+.main-chord h3 { color: #555; font-size: 1.4rem; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 4px;}
+.chord-huge { font-size: 6.5rem; font-weight: 900; color: white; line-height: 1; margin-bottom: 15px; }
+.chord-english { font-size: 2rem; color: var(--primary-color); font-weight: bold; }
+.chord-notes-hint { margin-top: 25px; color: #777; font-size: 1.2rem; }
+.next-chord { border-top: 2px dashed #222; padding-top: 40px; }
+.next-chord h4 { color: #555; font-size: 1.2rem; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 3px;}
+.chord-medium { font-size: 3rem; color: #aaa; font-weight: bold; }
+
+/* ------------------- RUTINAS STYLES ------------------- */
+.dashboard-view { text-align: center;}
+.routine-card {
+  background-color: var(--card-bg);
+  padding: 30px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.05);
+  margin-bottom: 25px;
+  text-align: left;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.routine-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.custom-card { border-left: 5px solid var(--primary-color); }
+.routine-card h4 { font-size: 1.6rem; color: white; margin-top: 0; margin-bottom: 15px;}
+.routine-ex-list { color: #aaa; line-height: 1.8; margin-bottom: 30px; padding-left: 20px; font-size: 1.1rem;}
+.routine-ex-list li { list-style-type: square; margin-bottom: 5px;}
+.routine-ex-list strong { color: var(--primary-color);}
+.start-routine-btn {
+  width: 100%;
+  padding: 20px;
+  background-color: #111;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: 900;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.3s;
+}
+.start-routine-btn:hover { background-color: var(--primary-color); color: black; transform: scale(1.02); }
+.back-btn { background:none; border:none; color:#1DB954; font-size:1.1rem; cursor:pointer; margin-bottom:20px; padding:0;}
+.back-btn:hover { text-decoration:underline; }

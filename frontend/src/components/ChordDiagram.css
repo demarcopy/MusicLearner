@@ -1,0 +1,22 @@
+.chord-diagram {
+  position: relative;
+  display: inline-block;
+  margin-top: 15px;
+  margin-bottom: 20px;
+}
+.diagram-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  width: 160px; /* Igual al ancho del vector SVG */
+}
+.string-status {
+  width: auto;
+  flex: 1;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #fff;
+}
+.string-status.muted { color: #ff4a4a; }
+.string-status.open { color: #1DB954; }

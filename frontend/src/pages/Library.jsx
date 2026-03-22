@@ -10,23 +10,26 @@ export default function Library() {
   const [isSearching, setIsSearching] = useState(false)
   const [searchError, setSearchError] = useState('')
 
+  // 1. CARGA DESDE EL NAVEGADOR
   const fetchMyLibrary = () => {
-    fetch('http://localhost:8080/api/songs')
-      .then(res => res.json())
-      .then(data => {
-        setSongs(data)
-        setLoading(false)
-      })
-      .catch(err => {
-        console.error('Error al conectarse con Java:', err)
-        setLoading(false)
-      })
+    const saved = localStorage.getItem("misCanciones")
+    if (saved) {
+      try {
+        setSongs(JSON.parse(saved))
+      } catch (e) {
+        setSongs([])
+      }
+    } else {
+      setSongs([])
+    }
+    setLoading(false)
   }
 
   useEffect(() => {
     fetchMyLibrary()
   }, [])
 
+  // 2. BÚSQUEDA CORS-FREE (Serverless Proxy Universal)
   const handleSearchSongsterr = (e) => {
     e.preventDefault()
     if(!searchQuery) return
@@ -35,12 +38,13 @@ export default function Library() {
     setSearchError('')
     setSearchResults([]) 
     
-    const urlSeguraParaLaWeb = encodeURIComponent(searchQuery)
+    // Usamos el puente público AllOrigins para brincar el bloqueo CORS del navegador sin necesidad de Vercel Functions
+    const songsterrUrl = `http://www.songsterr.com/a/ra/songs.json?pattern=${encodeURIComponent(searchQuery)}`
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(songsterrUrl)}`
 
-    // PROXY hacia Java
-    fetch(`http://localhost:8080/api/songsterr/search?pattern=${urlSeguraParaLaWeb}`)
+    fetch(proxyUrl)
       .then(res => {
-        if (!res.ok) throw new Error("La API interna en Java no respondió correctamente")
+        if (!res.ok) throw new Error("El puente AllOrigins / Songsterr no respondió")
         return res.json()
       })
       .then(data => {
@@ -53,35 +57,33 @@ export default function Library() {
       })
       .catch(err => {
         console.error("Error buscando en Songsterr: ", err)
-        setSearchError("Hubo un error contactando al proxy de Java o a la base mundial de Songsterr.")
+        setSearchError("Hubo un error contactando al puente libre o a la base mundial de Songsterr.")
         setIsSearching(false)
       })
   }
 
   const handleSaveFromApi = (apiSong) => {
     const newSong = { 
+      id: Date.now().toString(),
       title: apiSong.title, 
-      artist: apiSong.artist, 
+      artist: apiSong.artist.name, // La API directa devuelve un objeto {artist: {name: 'Pink Floyd'}}
       content: "", 
-      songsterrId: apiSong.songId 
+      songsterrId: apiSong.id // La API directa devuelve 'id'
     }
     
-    fetch('http://localhost:8080/api/songs', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newSong)
-    })
-    .then(() => {
-      fetchMyLibrary()
-      setSearchResults([]) 
-      setSearchQuery('')
-    })
+    const updated = [...songs, newSong]
+    setSongs(updated)
+    localStorage.setItem("misCanciones", JSON.stringify(updated))
+    
+    setSearchResults([]) 
+    setSearchQuery('')
   }
 
   const handleDelete = (id) => {
-    if(window.confirm('¿Seguro quieres borrar esta canción de tu biblioteca?')) {
-      fetch(`http://localhost:8080/api/songs/${id}`, { method: 'DELETE' })
-      .then(() => fetchMyLibrary())
+    if(window.confirm('¿Seguro quieres borrar esta canción de tu biblioteca personal?')) {
+      const updated = songs.filter(s => s.id !== id)
+      setSongs(updated)
+      localStorage.setItem("misCanciones", JSON.stringify(updated))
     }
   }
 
@@ -90,7 +92,7 @@ export default function Library() {
       {/* BUSCADOR EXTERNO */}
       <div className="form-card">
         <h2>🔍 Buscar Canción o Artista</h2>
-        <p className="helper-text">Hacemos magia conectándonos a la extensa base de datos mundial de Songsterr a través de Java.</p>
+        <p className="helper-text">Hacemos magia conectándonos a la extensa base mundial de Songsterr por medio de Nodos Serverless.</p>
         <form onSubmit={handleSearchSongsterr} className="search-form">
           <input 
             type="text" 
@@ -99,7 +101,7 @@ export default function Library() {
             onChange={e => setSearchQuery(e.target.value)}
           />
           <button type="submit" disabled={isSearching}>
-            {isSearching ? "Buscando..." : "Buscar Tablatura"}
+            {isSearching ? "Buscando en la Nube..." : "Buscar Tablatura"}
           </button>
         </form>
 
@@ -108,10 +110,10 @@ export default function Library() {
         {searchResults.length > 0 && (
           <div className="results-list">
             {searchResults.map(apiSong => (
-              <div key={apiSong.songId} className="result-item">
+              <div key={apiSong.id} className="result-item">
                 <div className="result-info">
                   <strong>{apiSong.title}</strong>
-                  <span>🎤 {apiSong.artist}</span>
+                  <span>🎤 {apiSong.artist.name}</span>
                 </div>
                 <button onClick={() => handleSaveFromApi(apiSong)} className="add-btn">
                   + A mi Biblioteca
@@ -124,9 +126,9 @@ export default function Library() {
 
       {/* BIBLIOTECA DEL USUARIO */}
       <div className="songs-container">
-        <h2>📚 Mi Biblioteca Guardada</h2>
+        <h2>📚 Mi Biblioteca Guardada (Memoria de Navegador)</h2>
         {loading ? <p>Cargando tus canciones...</p> : null}
-        {(!loading && songs.length === 0) ? <p>No tienes tablaturas guardadas. ¡Busca una arriba!</p> : null}
+        {(!loading && songs.length === 0) ? <p style={{color:'#888'}}>No tienes tablaturas guardadas. ¡Busca una arriba!</p> : null}
         
         <div className="songs-grid">
           {songs.map(song => (
@@ -136,7 +138,7 @@ export default function Library() {
                   <h3>{song.title}</h3>
                   <p className="artist">🎸 {song.artist}</p>
                 </div>
-                <button className="delete-btn" onClick={() => handleDelete(song.id)}>✕</button>
+                <button className="delete-btn" onClick={() => handleDelete(song.id)} title="Borrar de la Memoria">✕</button>
               </div>
               
               <div className="song-content">
