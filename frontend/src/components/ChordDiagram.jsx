@@ -60,8 +60,19 @@ export default function ChordDiagram({ chordName }) {
   const hSpacing = width / (numStrings - 1);
   const vSpacing = height / numFrets;
 
+  const stringNames = ['MI', 'LA', 'RE', 'SOL', 'SI', 'mi'];
+
   return (
     <div className="chord-diagram">
+      {/* Nombres de las Cuerdas al Aire */}
+      <div className="diagram-header" style={{ marginBottom: '2px' }}>
+        {stringNames.map((note, i) => (
+          <div key={'note' + i} className="string-status" style={{ fontSize: '0.75rem', color: '#aaa', fontWeight: 'bold' }}>
+            {note}
+          </div>
+        ))}
+      </div>
+      
       <div className="diagram-header">
         {shape.map((fret, i) => (
           <div key={i} className={`string-status ${fret === -1 ? 'muted' : fret === 0 ? 'open' : ''}`}>

@@ -24,6 +24,7 @@ h1 {
   margin-bottom: 0px;
   background: linear-gradient(45deg, var(--primary-color), #81b71a);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -364,7 +365,9 @@ button:disabled {
 .master-play.stop:hover { background-color: #ff2a2a; transform: scale(1.05);}
 
 .chord-screen { 
-  flex: 1;
+  flex: 1.5;
+  min-width: 0;
+  box-sizing: border-box;
   text-align: center;
   background-color: #0a0a0a; 
   border: 4px solid #222; 
@@ -419,3 +422,55 @@ button:disabled {
 .start-routine-btn:hover { background-color: var(--primary-color); color: black; transform: scale(1.02); }
 .back-btn { background:none; border:none; color:#1DB954; font-size:1.1rem; cursor:pointer; margin-bottom:20px; padding:0;}
 .back-btn:hover { text-decoration:underline; }
+
+/* ------------------- RESPONSIVE DESIGN ------------------- */
+@media (max-width: 900px) {
+  .practice-dashboard {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .practice-settings-panel {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+  
+  .chord-screen {
+    width: 100% !important;
+    box-sizing: border-box;
+    position: relative; /* Quitar sticky layout horizontal */
+    top: 0;
+    padding: 30px 10px;
+  }
+  
+  .practice-controls {
+    flex-direction: column;
+    gap: 25px;
+    padding: 20px;
+  }
+
+  /* Evitar desbordes de texto gigante en el acorde o pantallas */
+  .chord-huge {
+    font-size: 3.5rem !important;
+    white-space: normal !important;
+    word-break: break-word;
+  }
+  
+  .main-chord h3 {
+    font-size: 1rem;
+    letter-spacing: 2px;
+  }
+  
+  .chord-medium {
+    font-size: 2rem;
+  }
+
+  .speed-selector {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  h1 { font-size: 2.5rem; }
+  h2 { font-size: 2rem !important; }
+}

@@ -2,6 +2,34 @@ import { useState, useEffect } from 'react'
 import { Chord } from '@tonaljs/tonal'
 import ChordDiagram from '../components/ChordDiagram'
 
+let audioCtx = null;
+const playClick = (isAccent = false) => {
+  try {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    const osc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    
+    osc.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    
+    osc.type = 'square'; 
+    osc.frequency.setValueAtTime(isAccent ? 1200 : 800, audioCtx.currentTime); // Woodblock-ish sound
+    
+    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05); // Short tick
+    
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.05);
+  } catch (e) {
+    console.log('AudioContext not supported or active yet');
+  }
+}
+
 // -- DICCIONARIOS DE NUESTROS "4 MODOS DEPORTIVOS" --
 const simpleChordsList = ['C', 'Cm', 'D', 'Dm', 'E', 'Em', 'F', 'Fm', 'G', 'Gm', 'A', 'Am', 'B', 'Bm']
 const powerChordsList  = ['C5', 'D5', 'E5', 'F5', 'G5', 'A5', 'B5']
@@ -31,14 +59,14 @@ export default function Practice() {
   const [practiceMode, setPracticeMode] = useState('CHORDS')
   
   const [isPlaying, setIsPlaying] = useState(false)
-  const [secondsPerChord, setSecondsPerChord] = useState(3)
+  const [rpm, setRpm] = useState(60)
   
   // -- CONFIGURADORES VISUALES --
   const [selectedChords, setSelectedChords] = useState(simpleChordsList)
   const [showHints, setShowHints] = useState(true)
   const [showNext, setShowNext] = useState(true)
   const [showDiagram, setShowDiagram] = useState(true)
-
+  
   const [currentItem, setCurrentItem] = useState('-')
   const [nextItem, setNextItem] = useState('-')
   const [tick, setTick] = useState(0)
@@ -47,12 +75,17 @@ export default function Practice() {
   useEffect(() => {
     let timer;
     if(isPlaying) {
+      playClick(true); // Primer metrónomo al dar play (acento)
       timer = setInterval(() => {
-         setTick(t => t + 1)
-      }, secondsPerChord * 1000)
+         setTick(t => {
+           const nextTick = t + 1;
+           playClick(nextTick % 4 === 0);
+           return nextTick;
+         })
+      }, (60 / rpm) * 1000)
     }
     return () => clearInterval(timer)
-  }, [isPlaying, secondsPerChord])
+  }, [isPlaying, rpm])
 
   // 2. Ciclo de Vida: Qué hacer cada vez que la manecilla de reloj camina (+1s)
   useEffect(() => {
@@ -62,7 +95,7 @@ export default function Practice() {
         const second = getRandomItem(first)
         setCurrentItem(first)
         setNextItem(second)
-      } else {
+      } else if (tick % 4 === 0) {
         setCurrentItem(nextItem)
         setNextItem(getRandomItem(nextItem))
       }
@@ -153,10 +186,36 @@ export default function Practice() {
           <div className="practice-controls">
             <div className="control-group">
               <label>Impulsos de Metrónomo:</label>
-              <div className="speed-selector">
-                <button disabled={isPlaying} onClick={() => setSecondsPerChord(Math.max(1, secondsPerChord - 1))}>-</button>
-                <span className="speed-display">{secondsPerChord} segs</span>
-                <button disabled={isPlaying} onClick={() => setSecondsPerChord(secondsPerChord + 1)}>+</button>
+              <div className="speed-selector" style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+                <button disabled={isPlaying} onClick={() => setRpm(Math.max(1, rpm - 1))}>-</button>
+                
+                <div style={{display: 'flex', alignItems: 'center', background: '#333', borderRadius: '8px', padding: '5px 10px'}}>
+                  <input 
+                    type="number" 
+                    disabled={isPlaying} 
+                    value={rpm} 
+                    onChange={(e) => {
+                      const val = e.target.value === '' ? '' : Math.max(1, Number(e.target.value));
+                      setRpm(val);
+                    }}
+                    onBlur={(e) => {
+                      if(e.target.value === '' || Number(e.target.value) < 1) setRpm(60);
+                    }}
+                    style={{
+                      width: '60px', 
+                      textAlign: 'center', 
+                      fontSize: '1.2rem', 
+                      backgroundColor: 'transparent', 
+                      color: 'white', 
+                      border: 'none', 
+                      outline: 'none',
+                      fontWeight: 'bold'
+                    }}
+                  />
+                  <span style={{color: '#888', marginLeft: '5px', fontWeight: 'bold'}}>RPM</span>
+                </div>
+
+                <button disabled={isPlaying} onClick={() => setRpm(rpm === '' ? 2 : rpm + 1)}>+</button>
               </div>
             </div>
             <button 
@@ -210,12 +269,17 @@ export default function Practice() {
 
         {/* Panel Derecho: Visor de Juego Óptico */}
         <div className={`chord-screen ${isPlaying ? 'active-screen' : ''}`}>
+          
           <div className="main-chord">
             <h3>{practiceMode === 'SPIDER' ? 'Ejecuta esta Araña' : practiceMode === 'PENTATONIC' ? 'Fase sobre esta Escala' : 'Acorde Central Obligatorio'}</h3>
             
-            {/* Si es araña, la letra es más larga, usamos fuente reducida dinámicamente */}
-            <div className="chord-huge" style={{fontSize: practiceMode === 'SPIDER' ? '4.5rem' : '7rem', whiteSpace: 'nowrap'}}>
-               {currentItem !== '-' ? currentItem : 'Aguardando'}
+            {/* Si es araña, la letra es más larga. Si está en espera, usamos fuente acorde al mensaje */}
+            <div className="chord-huge" style={{
+               fontSize: currentItem === '-' ? '3.5rem' : (practiceMode === 'SPIDER' ? '4.5rem' : '7rem'), 
+               whiteSpace: 'normal',
+               wordBreak: 'break-word'
+            }}>
+               {currentItem !== '-' ? currentItem : 'Aguardando...'}
             </div>
             
             <div className="chord-english">
