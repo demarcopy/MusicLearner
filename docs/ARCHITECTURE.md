@@ -1,44 +1,31 @@
-# 🧠 Arquitectura de MusicLearner
+# 🏗️ Arquitectura del Sistema: MusicLearner
 
-Este documento tiene el principal objetivo de explicar, en palabras amigables pero estrictamente técnicas, cómo "respira" y funciona nuestra aplicación web musical en su interior. Te ayudará a comprender los conceptos detrás de los bloques de código que vienes programando.
+Este documento detalla las decisiones de ingeniería detrás del proyecto en su etapa actual.
 
-## 1. El Modelo "Cliente-Servidor"
+## 1. Evolución: De Monolito Java a Serverless SPA
 
-Atrás quedaron las épocas donde un programa era "un solo archivo grande". Nuestra aplicación está dividida estratégicamente en dos mundos completamente distintos que "hablan" por internet:
+Originalmente, MusicLearner nació como un ecosistema monolítico tradicional:
+- **Backend Central:** Spring Boot (Java 17).
+- **Base de Datos:** H2 Database / SQL Relacional.
+- **Frontend Cliente:** React CLI.
 
-### 📱 El "Cliente" (Frontend)
-Todo el código de la carpeta `frontend/`.
-- **Trabajo Principal:** Corre exclusivamente en el navegador web del usuario (Chrome, Firefox, Safari). Dibuja los colores, mueve las animaciones, y organiza las métricas de tu pantalla (los acordes, letras y tablaturas).
-- **Tecnología:** Escrito en **React**. React permite construir la web no como "páginas gigantes", sino como "piezas de lego" o **Componentes**. Gracias a esto, actualizar una partitura es instantáneo y no requiere presionar *F5* para recargar. (Revisa cómo se usa esa lógica con la palabra `useState` en tu archivo `App.jsx`).
+Sin embargo, para abaratar los costos de hosteo de un sistema de aficionado a **$0.00**, lograr independizar el frontend, y garantizar tiempos de carga de la web de 0.0ms ("PWA Instant load"), **se tomó la decisión arquitectónica de decapitar la cabeza del proyecto y eliminar por completo el Backend de Java de la historia del código.**
 
-### 🏭 El "Servidor" (Backend)
-Todo el código de la carpeta `backend/`.
-- **Trabajo Principal:** Guardar los datos permanentemente. Controla quién entra (logins de usuarios), procesa algoritmos pesados y protege la información privada (como qué canciones marcaste de "favoritos").
-- **Tecnología:** Escrito en **Java** usando el monstruo corporativo e hiper-estable llamado **Spring Boot**. El servidor nunca expone su código fuente a quienes visitan la página.
+## 2. Solución a los 2 problemas del Paradigma Frontend-Only
 
----
+Al remover el esqueleto de backend, el frontend quedó temporalmente inútil ante las redes mundiales. Para revivirlo y potenciarlo, aplicamos las siguientes técnicas modernas:
 
-## 2. ¿Cómo se comunican? (La magia de una "API REST")
+### A. Persistencia de Datos (¿Dónde guardar Canciones y Rutinas?)
+En lugar de lanzar bucles de carga por consultas `FETCH / POST` a una base de datos SQL remota que costaba dinero mensual proveer, diseñamos una red de repositorios reactivos locales que serializan objetos JSON y los envigan directamente mediante la API `localStorage` integrada en todo V8 Engine (El navegador del usuario).
+- **Ventaja:** Funciona completamente offline en lugares sin conexión. La privacidad es soberana (nadie más que el dueño del dispositivo puede ver lo que estudia o toca), y carece de costos por tráfico de transacciones de base de datos.
+- **Desventaja:** Limpiar brutalmente la caché del navegador destruye la información y anula la rutina, forzando la creación de una nueva desde cero.
 
-Imagina que el Frontend y el Backend están en dos países distintos y necesitan hablarse. No pueden leerse la mente mutuamente, así que usan mensajeros: El protocolo clásico de la web, **HTTP**, y siguen un formato arquitectónico llamado **API REST**.
+### B. Evasión del Bloqueo CORS en las Búsquedas
+Los navegadores de internet modernos por seguridad estricta, bloquean severamente cualquier código JavaScript que intente asomillar comandos FETCH asíncronos hacia un dominio web distinto al suyo (Cross-Origin Resource Sharing). Originalmente, usábamos el Controlador Java Spring como "Mensajero intermedio" para esconder y enmascarar nuestra huella de petición y que la empresa de tablaturas (Songsterr) nos permitiera descargar el archivo de acordes.
+**La Nueva Solución Serverless:** Instrumentamos el uso nativo de una infraestructura Open-Source llamada "AllOrigins" (`api.allorigins.win`). Operando como puente o Bridge, nuestro React envía ahora la petición al puente libre público que no requiere llaves maestras, el puente rebota la instrucción a Songsterr desde servidores no auditados por navegador, descarga el cuerpo estático e hidrata exitosamente los mapas de nuestro código de React, logrando eludir el protocolo y mantener la búsqueda de canciones totalmente funcional sin servidor dedicado.
 
-**Veamos tu primer código como ejemplo paso a paso:**
-1. Al abrir la página, **React (Frontend)** pregunta: *"¡Hola servidor! Dime si estás vivo y conectado"*. Lo hace disparando la orden `fetch("http://localhost:8080/api/hello")` en tu archivo `App.jsx`.
-2. Ese mensaje viaja invisible por dentro de tu PC, toca la puerta del puerto 8080 y es recibido en **Java (Spring Boot)**.
-3. Spring Boot lee la dirección que le enviaste (`/api/hello`) y se la entrega al que anotaste con ese pase, en este caso a tu archivo `TestController.java` porque lleva la etiqueta (anotación) `@GetMapping("/hello")`.
-4. El método dentro de ese Controller agarra la solicitud y "fabrica" un paquete de respuesta (el saludo). Como Java no habla "idioma web", empaqueta ese mensaje en un lenguaje de texto ultraligero y universal que usan los equipos informáticos, llamado **JSON**.
-5. Tu frontend (React) toma de regreso esa caja JSON, lee su mensaje adentro, y te pinta ese bonito texto en color verde (`<p>{message}</p>`). Y todo esto pasa en décimas de segundo.
+## 3. Geometría Gráfica: El SVG Paramétrico Fretboard Engine
 
----
+En lugar de delegar el core-visual de la instrucción de la guitarra importando librerías genéricas obsoletas desarrolladas por terceros (Como `react-guitar` o miles de `.png` estáticos pesados por cada nota tonal), decidimos construir un micromotor de renderizado vectorial paramétrico nativo inyectado crudo al Frontend.
 
-## 3. Radiografía Interna de Java (Capas de tu Backend)
-
-Para no construir un archivo de texto inmenso, el backend en la industria moderna no mezcla funciones a lo loco, se estructura en **Capas** o paquetes bien delimitados. Tu estructura tiene estas responsabilidades de "oficina":
-
-1. **`controllers` (Los Recepcionistas):** Las clases que reciben peticiones externas (los GET, POST, DELETE de internet). Escuchan la solicitud, miran que venga bien estructurada y se la derivan a quien corresponda procesarla. *(Anotaciones típicas: `@RestController`, `@RequestMapping`).*
-2. **`services` (Los Gerentes Lógicos):** La magia matemática habita aquí. Por ejemplo "Calcular cuánto duran todas las canciones de una tu playlist sumadas" o "Autenticar un login a ver si sirve". Un controlador le "arroja el paciente" al servicio para que ponga la medicina.
-3. **`repositories` (Los Diarios Íntimos de la Base de Datos):** Su única función existencial es guardar y extraer filas de nuestras tablas. Hablan directo con tus bases SQL. Con `Spring Data JPA` del que hacemos uso, programar esta capa es casi automático porque Spring sabe pre-escribirlo.
-4. **`models` (Entity):** Los planos u objetos puros. Por ejemplo: `public class Song` teniendo propiedades como `{ String id, String title, String artist, String chords }`. Estos a su vez se mapean directamente para ser tus "tablas". 
-
-## 4. El Futuro 
-Teniendo este mapa conceptual, el próximo paso normal de los grandes programas es empezar a diseñar bases de datos interactivas y diseñar una UI digna de la mejor plataforma para músicos.
+El componente arquitectónico `ChordDiagram.jsx` inyecta etiquetas abstractas nativas matematicas `<svg>` directas al DOM de Google Chrome. Interpreta de diccionarios locales y lee estructuras matriciales de estado de tipo `[-1, 3, 5, 5, 4, 3]`. Mediante restas operacionales iterativas, el componente calcula en tiempo real el desplazamiento visual de las cejillas superiores (barre chords), y posiciona individualmente cada coordenada geométrica de los dedos `(CX, CY)` sobre el diapasón vectorial re-escala de madera abstracta negra, imprimiendo resultados hiper-rígidos que nunca pixelan, todo sin costar ni un mínimo megabyte de ancho de banda o transferencia.

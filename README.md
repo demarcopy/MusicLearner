@@ -1,43 +1,49 @@
-# 🎶 MusicLearner
+# 🎶 MusicLearner (Serverless Edition)
 
-MusicLearner es una aplicación web interactiva diseñada para crear y gestionar tu propia biblioteca musical. Podrás buscar y visualizar tablaturas, guardar tus canciones favoritas y practicar tus habilidades con una interfaz moderna y atractiva orientada a músicos y aprendices.
+MusicLearner es una academia musical y biblioteca de tablaturas interactiva. Ahora configurada como una **Single Page Application (SPA)** 100% Serverless, lo que significa que puedes estructurar tus rutinas, visualizar el mástil de tu guitarra y guardar partituras sin necesidad de instalar o mantener bases de datos complejas.
 
-## 🛠️ Tecnologías Utilizadas
+## 🌟 Características Principales (Módulos)
 
-Este proyecto sigue una arquitectura **Full-Stack** moderna (Cliente/Servidor), separando completamente lo visual del procesamiento:
+1. **📚 Biblioteca de Tablaturas:** Integración directa con la base de datos mundial de *Songsterr* usando el puente público de *AllOrigins* para esquivar bloqueos de navegador (CORS). Todas tus partituras favoritas se guardan instantáneamente en tu memoria `localStorage`. 
+2. **📖 Teoría Computacional:** Entiende la música mediante laboratorios interactivos impulsados por Inteligencia Artificial Teórica (`Tonal.js`). Construye escalas y acordes desmintiendo mitos.
+3. **🎸 Gimnasio Multidisciplinario:** Un motor de gráficos vectoriales (SVG) que dibuja tu mástil para que practiques *Power Chords*, *Arañas* y *Pentatónicas*.
+4. **🏋️‍♀️ Constructor de Rutinas:** Diseña tus propios entrenamientos cronometrados.
 
-- **Backend (El Cerebro/Servidor):** Java 17, Spring Boot, Spring Web. 
-- **Frontend (La Interfaz Web):** React, JavaScript, Vite, CSS puro.
-- **Base de Datos:** (En desarrollo) Configurada inicialmente en memoria con H2 para migrar después a PostgreSQL.
+## 🛠️ Stack Tecnológico
 
----
-
-## 🚀 Cómo ejecutar el proyecto (Modo Desarrollo)
-
-Para hacer funcionar la aplicación en tu computadora, debes iniciar **ambos** servidores por separado al mismo tiempo.
-
-### 1. Iniciar el Backend (Java / Spring Boot)
-El servidor maestro de la aplicación, encargado de la base de datos y la seguridad.
-1. Abre una terminal o Símbolo del sistema.
-2. Ingresa a la carpeta del backend: `cd backend`
-3. Ejecuta la aplicación usando el envoltorio de Maven (*mvnw*):
-   - **En Windows:** `.\mvnw spring-boot:run`
-   - **En Mac/Linux:** `./mvnw spring-boot:run`
-4. El backend se levantará y empezará a "escuchar" en la dirección `http://localhost:8080`.
-
-### 2. Iniciar el Frontend (React / Vite)
-La parte visual de la web donde harás clic y leerás las partituras.
-1. Abre una **segunda terminal diferente**.
-2. Ingresa a la carpeta del frontend: `cd frontend`
-3. Instala las dependencias (necesario solo si es la primera vez que clonas el código): `npm install`
-4. Arranca el servidor de desarrollo web ultra-rápido: `npm run dev`
-5. Mantén pulsado `Ctrl` y haz clic izquierdo en la URL que aparece (generalmente `http://localhost:5173`) para ver tu web.
-
-> **¡Misión Cumplida!** React se comunicará inmediatamente con el Spring Boot para mostrar el estado del sistema.
+- **Frontend (Interfaz y Lógica):** React, JavaScript, Vite.
+- **Renderizado Visual:** Vanilla CSS moderno.
+- **Persistencia de Datos:** Web Storage API (`localStorage`).
+- **Despliegue Recomendado:** Vercel o Netlify (Zero config, Costo Cero).
 
 ---
 
-## 📚 ¿Quieres entender cómo funciona por dentro? 
-Hemos elaborado un documento extenso que explica conceptualmente todo sobre MusicLearner, el rol que cumple cada línea de tu código, y por qué está estructurado de esta manera. 
+## 🚀 Cómo ejecutar el proyecto (Localmente)
 
-Lee la documentación técnica diseñada para tu aprendizaje entrando a: [Arquitectura del Sistema](docs/ARCHITECTURE.md).
+Como la aplicación ya no depende de un servidor Backend monolítico pesado, iniciarla es cuestión de solo 2 comandos en cualquier computadora del mundo:
+
+1. Abre una terminal y navega a la carpeta principal:
+   ```bash
+   cd frontend
+   ```
+2. Instala las dependencias de Node.js (solo si lo acabas de descargar):
+   ```bash
+   npm install
+   ```
+3. Arranca el motor de Vite web:
+   ```bash
+   npm run dev
+   ```
+4. Ingresa a `http://localhost:5173`. Tus datos anteriores de caché seguirán ahí esperándote.
+
+---
+
+## 🌍 Cómo subir la web a Internet (Host Gratis)
+
+Dado que el servidor de lógica, bases de datos y proxy ahora viven del lado del cliente (**Frontend-Only**), subirla a la internet real te tomará 30 segundos:
+
+1. Sube/Asegúrate de que este código viva en tu repositorio de GitHub.
+2. Crea una cuenta en [Vercel.com](https://vercel.com/) o [Netlify.com](https://netlify.com/).
+3. Haz clic en **"Import Project / Add New Site"** y selecciona tu repositorio de GitHub.
+4. El sistema autodetectará que es una app de "Vite React". No toques nada, y presiona el grandísimo botón de **Depliegue (Deploy)**.
+5. ¡Listo! Te otorgarán un enlace web real funcional que podrás probar desde el navegador de tu celular en el gimnasio.
